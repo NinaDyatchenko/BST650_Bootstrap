@@ -7,14 +7,208 @@ output: html_document
 
 **1.** Work through this lesson on functions: https://swcarpentry.github.io/r-novice-inflammation/02-func-R/
 
+**Defining Function**
+```{r}
+fahrenheit_to_kelvin <- function(temp_F) {
+  temp_K <- ((temp_F - 32) * (5 / 9)) + 273.15
+  return(temp_K)
+}
+# freezing point of water
+fahrenheit_to_kelvin(32)
+
+# boiling point of water
+fahrenheit_to_kelvin(212)
+
+kelvin_to_celsius <- function(temp_K) {
+  temp_C <- temp_K - 273.15
+  return(temp_C)
+}
+```
+**Composing Functions**
+```{r}
+# absolute zero in Celsius
+kelvin_to_celsius(0)
+
+fahrenheit_to_celsius <- function(temp_F) {
+  temp_K <- fahrenheit_to_kelvin(temp_F)
+  temp_C <- kelvin_to_celsius(temp_K)
+  return(temp_C)
+}
+```
+**Nesting Functions** - “nesting” one function inside another.
+```{r}
+# freezing point of water in Celsius
+fahrenheit_to_celsius(32.0)
+
+# freezing point of water in Celsius
+kelvin_to_celsius(fahrenheit_to_kelvin(32.0))
+
+best_practice <- c("Write", "programs", "for", "people", "not", "computers")
+asterisk <- "***"  # R interprets a variable with a single value as a vector
+                   # with one element.
+
+fence <- function(original, wrapper) {
+  answer <- c(wrapper, original, wrapper)
+  return(answer)
+}
+fence(best_practice, asterisk)
+
+outside <- function(v) {
+  first <- v[1]
+   last <- v[length(v)]
+   answer <- c(first, last)
+   return(answer)
+}
+dry_principle <- c("Don't", "repeat", "yourself", "or", "others")
+outside(dry_principle)
+```
+**The Call Stack** - Function calls are managed via the call stack. 
+
+**Named Variables and Scope Variables** - Functions can accept arguments explicitly assigned to a variable name in in the function call functionName(variable = value), as well as arguments by order.
+```{r}
+input_1 <- 20
+mySum <- function(input_1, input_2 = 10) {
+  output <- input_1 + input_2
+  return(output)
+}
+mySum(input_1 = 1, 3)
+
+#mySum(3)
+#mySum(input_2=3)
+# Error: argument "input_1" is missing, with no default.
+```
+**Testing and Documenting** - start testing that those functions are working correctly.
+```{r}
+center <- function(data, desired) {
+  new_data <- (data - mean(data)) + desired
+  return(new_data)
+}
+z <- c(0, 0, 0, 0)
+z
+center(z, 3)
+# works right
+
+dat <- read.csv(file = "C:/Users/Nina/Documents/GitHub/BST650_Bootstrap/inflammation-01.csv", 
+                header = FALSE)
+centered <- center(dat[, 4], 0)
+head(centered)
+# original min
+min(dat[, 4])
+# original mean
+mean(dat[, 4])
+# original max
+max(dat[, 4])
+# centered min
+min(centered)
+# centered mean
+mean(centered)
+# centered max
+max(centered)
+# original standard deviation
+sd(dat[, 4])
+# centered standard deviation
+sd(centered)
+# difference in standard deviations before and after
+sd(dat[, 4]) - sd(centered)
+
+all.equal(sd(dat[, 4]), sd(centered))
+
+center <- function(data, desired) {
+  # return a new vector containing the original data centered around the
+  # desired value.
+  # Example: center(c(1, 2, 3), 0) => c(-1, 0, 1)
+  new_data <- (data - mean(data)) + desired
+  return(new_data)
+}
+```
+**Functions to Create Graphs**
+```{r}
+analyze <- function(filename) {
+  # Plots the average, min, and max inflammation over time.
+  # Input is character string of a csv file.
+  dat <- read.csv(file = filename, header = FALSE)
+  avg_day_inflammation <- apply(dat, 2, mean)
+  plot(avg_day_inflammation)
+  max_day_inflammation <- apply(dat, 2, max)
+  plot(max_day_inflammation)
+  min_day_inflammation <- apply(dat, 2, min)
+  plot(min_day_inflammation)
+}
+analyze("C:/Users/Nina/Documents/GitHub/BST650_Bootstrap/inflammation-01.csv")
+```
+
+**Rescaling** - takes a vector as input and returns a corresponding vector of values scaled to lie in the range 0 to 1.
+```{r}
+rescale <- function(v) {
+  # Rescales a vector, v, to lie in the range 0 to 1.
+  L <- min(v) # lowest value
+  H <- max(v) # highers value
+  result <- (v - L) / (H - L)
+  return(result)
+}
+
+rescale(1:19)
+```
+**Defining Defaults** - we can pass the arguments to read.csv without naming them.
+```{r}
+dat <- read.csv("C:/Users/Nina/Documents/GitHub/BST650_Bootstrap/inflammation-01.csv", FALSE)
+
+#re-define our center function
+center <- function(data, desired = 0) {
+  # return a new vector containing the original data centered around the
+  # desired value (0 by default).
+  # Example: center(c(1, 2, 3), 0) => c(-1, 0, 1)
+  new_data <- (data - mean(data)) + desired
+  return(new_data)
+}
+test_data <- c(0, 0, 0, 0)
+center(test_data, 3)
+more_data <- 5 + test_data
+more_data
+center(more_data)
+
+display <- function(a = 1, b = 2, c = 3) {
+  result <- c(a, b, c)
+  names(result) <- c("a", "b", "c")  # This names each element of the vector
+  return(result)
+}
+
+# no arguments
+display()
+# one argument
+display(55)
+# two arguments
+display(55, 66)
+# three arguments
+display(55, 66, 77)
+# only setting the value of c
+display(c = 77)
+```
+**Matching Arguments** - R has three ways that arguments are supplied by you are matched to the formal arguments of the function definition.
+
+read.csv(file, header = TRUE, sep = ",", quote = "\"",
+        dec = ".", fill = TRUE, comment.char = "", ...)
+
+**A Function with Default Argument Values** - Rewrite the rescale function so that it scales a vector to lie between 0 and 1 by default, but will allow the caller to specify lower and upper bounds if they want.
+```{r}
+rescale <- function(v, lower = 0, upper = 1) {
+  # Rescales a vector, v, to lie in the range lower to upper.
+  L <- min(v)
+  H <- max(v)
+  result <- (v - L) / (H - L) * (upper - lower) + lower
+  return(result)
+}
+```
 **2.** Create a function called `bootstrap()` that modifies the behaviour of the `sample()` function to perform a bootstrap sample on a given vector. Remember that bootstrap samples are the same **length** as the original sample, and remember that these samples are taken **with replacement** (*hint, hint*).
 
 ```{r}
 bootstrap<- function(data) {
-  sample<- sample(data, replace = FALSE)
-  return(sample)
+  sample1<- sample(data, size=length(data), replace = T) # sample with replacement
+  return(sample1)
 }
 ```
+
+
 **3.** Create the following vector: `grades = c(92, 80, 85, 95, 97, 78, 90, 86, 88, 66, 70, 82)`. Find the five-number summary, mean, and standard deviation of `grades`.
 
 ```{r}
@@ -37,7 +231,7 @@ boot9<- bootstrap(grades)
 boot10<- bootstrap(grades)
 ```
 **5.** Find the five-number summary, mean, and standard deviation of each bootstrap sample.
-```{5}
+```{r}
 summary(boot1)
 sd(boot1)
 summary(boot2)
@@ -62,7 +256,8 @@ sd(boot10)
 **6.** Create a data frame of these summary statistics (10 rows and seven columns).
 ```{r}
 BootsFrame <- data.frame(
-  Bootstraps = c("boot1", "boot2", "boot3", "boot4", "boot5", "boot6", "boot7", "boot8", "boot9", "boot10"),
+  Bootstraps = c("boot1", "boot2", "boot3", "boot4", "boot5", 
+                 "boot6", "boot7", "boot8", "boot9", "boot10"),
   MinBoot = c(min(boot1), min(boot2), min(boot3), min(boot4), min(boot5), 
               min(boot6), min(boot7), min(boot8), min(boot9), min(boot10)),
   Quart1 = c(IQR(boot1), IQR(boot2), IQR(boot3), IQR(boot4), IQR(boot5), 
@@ -71,14 +266,15 @@ BootsFrame <- data.frame(
                  median(boot6), median(boot7), median(boot8), median(boot9), median(boot10)), 
   MeanBoot= c(mean(boot1), mean(boot2), mean(boot3), mean(boot4), mean(boot5), 
               mean(boot6), mean(boot7), mean(boot8), mean(boot9), mean(boot10)),
-  
+  MaxBoot= c(max(boot1), max(boot2), max(boot3), max(boot4), max(boot5), 
+             max(boot6), max(boot7), max(boot8), max(boot9), max(boot10)),
   StDev = c(sd(boot1), sd(boot2), sd(boot3), sd(boot4), sd(boot5), 
             sd(boot6), sd(boot7), sd(boot8), sd(boot9), sd(boot10))
   )
 head(BootsFrame)
 ```
 # stringsAsFactors = FALSE) # do not change strings to factors;
-```{r}
+
 BootsFrame2<- data.frame(
   Bootstrap1 = c(boot1, min(boot1), IQR(boot1), median(boot1), mean(boot1), sd(boot1)),
   Bootstrap2 = c(boot2, min(boot2), IQR(boot2), median(boot2), mean(boot2), sd(boot2)),
@@ -86,5 +282,5 @@ BootsFrame2<- data.frame(
   Bootstrap4 = c(boot4, min(boot4), IQR(boot4), median(boot4), mean(boot4), sd(boot4))
 )
 head(BootsFrame2)
-```
+
 **7.** Find the bootstrap estimate of each element of the five-number summary, mean, and standard deviation (look at the formula in your notes, then look at the `?colMeans` help file).
