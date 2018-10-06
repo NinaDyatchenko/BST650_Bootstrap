@@ -1,0 +1,90 @@
+---
+title: "Assingment_1"
+author: "Nina Dyatchenko"
+date: "October 5, 2018"
+output: html_document
+---
+
+**1.** Work through this lesson on functions: https://swcarpentry.github.io/r-novice-inflammation/02-func-R/
+
+**2.** Create a function called `bootstrap()` that modifies the behaviour of the `sample()` function to perform a bootstrap sample on a given vector. Remember that bootstrap samples are the same **length** as the original sample, and remember that these samples are taken **with replacement** (*hint, hint*).
+
+```{r}
+bootstrap<- function(data) {
+  sample<- sample(data, replace = FALSE)
+  return(sample)
+}
+```
+**3.** Create the following vector: `grades = c(92, 80, 85, 95, 97, 78, 90, 86, 88, 66, 70, 82)`. Find the five-number summary, mean, and standard deviation of `grades`.
+
+```{r}
+grades = c(92, 80, 85, 95, 97, 78, 90, 86, 88, 66, 70, 82)
+summary(grades)
+sd(grades)
+```
+
+**4.** Call your function 10 times on `grades`. Store each bootstrapped sample as `boot1`, `boot2`, ..., `boot10`.
+```{r}
+boot1<- bootstrap(grades)
+boot2<- bootstrap(grades)
+boot3<- bootstrap(grades)
+boot4<- bootstrap(grades)
+boot5<- bootstrap(grades)
+boot6<- bootstrap(grades)
+boot7<- bootstrap(grades)
+boot8<- bootstrap(grades)
+boot9<- bootstrap(grades)
+boot10<- bootstrap(grades)
+```
+**5.** Find the five-number summary, mean, and standard deviation of each bootstrap sample.
+```{5}
+summary(boot1)
+sd(boot1)
+summary(boot2)
+sd(boot2)
+summary(boot3)
+sd(boot3)
+summary(boot4)
+sd(boot4)
+summary(boot5)
+sd(boot5)
+summary(boot6)
+sd(boot6)
+summary(boot7)
+sd(boot7)
+summary(boot8)
+sd(boot8)
+summary(boot9)
+sd(boot9)
+summary(boot10)
+sd(boot10)
+```
+**6.** Create a data frame of these summary statistics (10 rows and seven columns).
+```{r}
+BootsFrame <- data.frame(
+  Bootstraps = c("boot1", "boot2", "boot3", "boot4", "boot5", "boot6", "boot7", "boot8", "boot9", "boot10"),
+  MinBoot = c(min(boot1), min(boot2), min(boot3), min(boot4), min(boot5), 
+              min(boot6), min(boot7), min(boot8), min(boot9), min(boot10)),
+  Quart1 = c(IQR(boot1), IQR(boot2), IQR(boot3), IQR(boot4), IQR(boot5), 
+             IQR(boot6), IQR(boot7), IQR(boot8), IQR(boot9), IQR(boot10)),
+  MedianBoot = c(median(boot1), median(boot2), median(boot3), median(boot4), median(boot5), 
+                 median(boot6), median(boot7), median(boot8), median(boot9), median(boot10)), 
+  MeanBoot= c(mean(boot1), mean(boot2), mean(boot3), mean(boot4), mean(boot5), 
+              mean(boot6), mean(boot7), mean(boot8), mean(boot9), mean(boot10)),
+  
+  StDev = c(sd(boot1), sd(boot2), sd(boot3), sd(boot4), sd(boot5), 
+            sd(boot6), sd(boot7), sd(boot8), sd(boot9), sd(boot10))
+  )
+head(BootsFrame)
+```
+# stringsAsFactors = FALSE) # do not change strings to factors;
+```{r}
+BootsFrame2<- data.frame(
+  Bootstrap1 = c(boot1, min(boot1), IQR(boot1), median(boot1), mean(boot1), sd(boot1)),
+  Bootstrap2 = c(boot2, min(boot2), IQR(boot2), median(boot2), mean(boot2), sd(boot2)),
+  Bootstrap3 = c(boot3, min(boot3), IQR(boot3), median(boot3), mean(boot3), sd(boot3)),
+  Bootstrap4 = c(boot4, min(boot4), IQR(boot4), median(boot4), mean(boot4), sd(boot4))
+)
+head(BootsFrame2)
+```
+**7.** Find the bootstrap estimate of each element of the five-number summary, mean, and standard deviation (look at the formula in your notes, then look at the `?colMeans` help file).
