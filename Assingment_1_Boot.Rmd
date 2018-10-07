@@ -205,8 +205,17 @@ rescale <- function(v, lower = 0, upper = 1) {
 bootstrap<- function(data) {
   sample1<- sample(data, size=length(data), replace = T) # sample with replacement
   return(sample1)
-}
+  }
 ```
+
+
+bootstrap<- function(data, n) {
+  sample1<- sample(data, size=length(data), replace = T) # sample with replacement
+  #return(sample1)
+  replic<- rep.int(sample1, n)
+  return(replic)
+}
+
 
 
 **3.** Create the following vector: `grades = c(92, 80, 85, 95, 97, 78, 90, 86, 88, 66, 70, 82)`. Find the five-number summary, mean, and standard deviation of `grades`.
@@ -269,18 +278,27 @@ BootsFrame <- data.frame(
   MaxBoot= c(max(boot1), max(boot2), max(boot3), max(boot4), max(boot5), 
              max(boot6), max(boot7), max(boot8), max(boot9), max(boot10)),
   StDev = c(sd(boot1), sd(boot2), sd(boot3), sd(boot4), sd(boot5), 
-            sd(boot6), sd(boot7), sd(boot8), sd(boot9), sd(boot10))
-  )
+            sd(boot6), sd(boot7), sd(boot8), sd(boot9), sd(boot10)),
+  stringsAsFactors = FALSE)
+
 head(BootsFrame)
 ```
-# stringsAsFactors = FALSE) # do not change strings to factors;
-
-BootsFrame2<- data.frame(
-  Bootstrap1 = c(boot1, min(boot1), IQR(boot1), median(boot1), mean(boot1), sd(boot1)),
-  Bootstrap2 = c(boot2, min(boot2), IQR(boot2), median(boot2), mean(boot2), sd(boot2)),
-  Bootstrap3 = c(boot3, min(boot3), IQR(boot3), median(boot3), mean(boot3), sd(boot3)),
-  Bootstrap4 = c(boot4, min(boot4), IQR(boot4), median(boot4), mean(boot4), sd(boot4))
-)
-head(BootsFrame2)
-
 **7.** Find the bootstrap estimate of each element of the five-number summary, mean, and standard deviation (look at the formula in your notes, then look at the `?colMeans` help file).
+At 95% CI alpha = 0.05
+```{r}
+estimateInt <- function(data) {
+  return(mean(data))
+}
+mean1<- estimateInt(BootsFrame$MinBoot)
+mean1
+```
+
+
+```{r}
+mean(BootsFrame$MinBoot)
+mean(BootsFrame$Quart1)
+mean(BootsFrame$MedianBoot)
+mean(BootsFrame$MeanBoot)
+mean(BootsFrame$MaxBoot)
+mean(BootsFrame$StDev)
+```
