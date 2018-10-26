@@ -1,0 +1,97 @@
+---
+title: "Assignment3_Bootstrap_10252018"
+author: "Nina Dyatchenko"
+date: "October 25, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Read this chapter on functions and if/else statements in R:
+http://r4ds.had.co.nz/functions.html
+Create a markdown report where you execute the code from this chapter, and attempt the exercises after each section. Some of them will be more challenging than others, but I still want you to try to solve them.
+
+Please upload this report to your GitHub by 11:59PM on Sunday, 28 October.
+
+#1 Prerequisites#
+Copies of the same code:
+```{r}
+# tibble builds a simple list/data_frame of a, b, c, and d with 10 values from a normal distribution:
+df<- tibble::tibble(
+  a=rnorm(10),
+  b=rnorm(10),
+  c=rnorm(10),
+  d=rnorm(10)
+)
+df
+
+df$a
+df$b
+df$c
+df$d
+
+
+# rescaling from 0 to 1:
+df$a <- (df$a - min(df$a, na.rm = TRUE)) / 
+  (max(df$a, na.rm = TRUE) - min(df$a, na.rm = TRUE))
+df$b <- (df$b - min(df$b, na.rm = TRUE)) / 
+  (max(df$b, na.rm = TRUE) - min(df$b, na.rm = TRUE)) 
+df$c <- (df$c - min(df$c, na.rm = TRUE)) / 
+  (max(df$c, na.rm = TRUE) - min(df$c, na.rm = TRUE))
+df$d <- (df$d - min(df$d, na.rm = TRUE)) / 
+  (max(df$d, na.rm = TRUE) - min(df$d, na.rm = TRUE))
+
+df$a
+df$b
+df$c
+df$d
+```
+Analysing the code: there is one input df$a (or df$b or df$c or df$d).
+Rewriting code using a general variable name x:
+```{r}
+x<- df$a
+(x-min(x, na.rm=TRUE))/ (max(x, na.rm=TRUE) - min(x, na.rm=TRUE))
+```
+Symplify:
+```{r}
+rng<- range(x, na.rm=TRUE)
+xx<- (x-rng[1])/ (rng[2]-rng[1])
+```
+Combine all into a function:
+```{r}
+rescale01<- function(x){
+  rng<-range(x, na.rm=T)
+  (x-rng[1])/(rng[2]-rng[1])
+}
+rescale01(c(0, 5, 10))
+```
+Cheching function with different outputs:
+```{r}
+rescale01(c(8, 10, -9, 500))
+rescale01(c(1, 9, NA, -9))
+```
+Applying the new function:
+```{r}
+df$a<- rescale01(df$a)
+df$b<- rescale01(df$b)
+df$c<- rescale01(df$c)
+df$d<- rescale01(df$d)
+df$a
+```
+Adjastign our function to unclude infinitine vlaues:
+```{r}
+x<- c(1:10, Inf)
+rescale01(x)
+
+rescale02<- function(x){
+  rng<- range(x, na.rm=T, finite=T)
+  (x-rng[1])/(rng[2]-rng[1])
+}
+rescale02(x)
+```
+
+#2 Practice#
+###1. Why is TRUE not a parameter to rescale01()? What would happen if x contained a single missing value, and na.rm was FALSE?
+
