@@ -57,7 +57,8 @@ x<- df$a
 Symplify:
 ```{r}
 rng<- range(x, na.rm=TRUE)
-xx<- (x-rng[1])/ (rng[2]-rng[1])
+x<- (x-rng[1])/ (rng[2]-rng[1])
+x
 ```
 Combine all into a function:
 ```{r}
@@ -85,13 +86,153 @@ Adjastign our function to unclude infinitine vlaues:
 x<- c(1:10, Inf)
 rescale01(x)
 
-rescale02<- function(x){
+rescale01<- function(x){
   rng<- range(x, na.rm=T, finite=T)
   (x-rng[1])/(rng[2]-rng[1])
 }
-rescale02(x)
+rescale01(x)
 ```
 
 #2 Practice#
-###1. Why is TRUE not a parameter to rescale01()? What would happen if x contained a single missing value, and na.rm was FALSE?
+###1. Why is TRUE not a parameter to rescale01()? 
+The TRUE is an argument of the parameter x. An argument specifies the parameter.
+
+What would happen if x contained a single missing value, and na.rm was FALSE?
+All values show as NA. na.rm=F means "do not omit" NA values.
+```{r}
+x<- c(1:10, NA)
+rescale01(x)
+
+rescale01<- function(x){
+  rng<- range(x, na.rm=F)
+  (x-rng[1])/(rng[2]-rng[1])
+}
+rescale01(x)
+```
+###2. In the second variant of rescale01(), infinite values are left unchanged. Rewrite rescale01() so that -Inf is mapped to 0, and Inf is mapped to 1.
+```{r}
+y<- c(1:10, -Inf)
+
+rescale01<- function(y){
+  rng<- range(y, na.rm=T, finite=F)
+  (y-rng[1])/(rng[2]-rng[1])
+}
+rescale01(y)
+```
+###3. Practice turning the following code snippets into functions. Think about what each function does. 
+What would you call it? 
+How many arguments does it need? 
+Can you rewrite it to be more expressive or less duplicative?
+
+```{r}
+z<- c(1:10, NA)
+
+mean(is.na(z)) # shows probability of NA values in a sample
+
+z/ sum(z, na.rm = T) # Gives NA's should not be omited
+
+CV<- sd(z, na.rm = T)/ mean(z, na.rm=T) # coeff. of variation is sd/mean
+
+```
+###4. 
+
+data<- read.csv("data/seed_root_herbivores.csv") # Error in file(file, "rt") : cannot open the connection
+
+mean(data$Height)
+var(data$Hight)
+length(data$Hight)
+
+Standard Error:
+sqrt(var(data$Hight)/lenght(data$Hight))
+sqrt(var(data$Weight)/length(data$Weight))
+
+
+###5. Write both_na(), a function that takes two vectors of the same length and returns the number of positions that have an NA in both vectors.
+
+```{r}
+a<- c(NA, 1:10, NA)
+b<- c(NA, 3:13, NA)
+(is.na(a))
+
+both_na<- function(a, b){
+  frequesncy(is.na(a)-is.na(b))
+}
+both_na(a, b)  
+
+```
+###6. What do the following functions do? Why are they useful even though they are so short?
+```{r}
+is_directory<- function (x) file.info(x)$isdir
+is_readable <- function(x) file.access(x, 4) ==0
+is_directory(x)
+is_readable(x)
+#Error in file.info(x) : invalid filename argument
+#Error in file.access(x, 4) : invalid 'names' argument
+```
+###7. Read the complete lyrics to “Little Bunny Foo Foo”. There’s a lot of duplication in this song. Extend the initial piping example to recreate the complete song, and use functions to reduce the duplication.
+```{r}
+
+```
+
+#3. Functions are for humans and computers.
+Create short but meaninful function names.
+Be consistent with naming: snake_case or camelCase types.
+Use common prefixes to indicate that functions are connected.
+  input_select()
+  input_checkbox()
+  input_text()
+Use str_ to find a function
+Avoid overwriting existing functions. Bad:
+  T<- FALSE
+  c<- 10
+Use comments, start writing comment with #.
+
+### Exercises
+```{r}
+f1<- function (string, prefix) {
+  substr(string, 1, nchar(prefix))==prefix
+}
+f1(z, 1)
+z
+
+k<- NA
+f2<- function(x) {
+  if (length(x)<= 1) return(NULL)
+    x[-length(x)]
+}
+f2(k)
+
+h<- 5
+f3<- function(x, y) {
+  rep(y, length.out = length(x))
+}
+f3(z, h)
+#repeats y x-times
+```
+###2. Take a function that you’ve written recently and spend 5 minutes brainstorming a better name for it and its arguments.
+```{r}
+find_prefix<- function (string, prefix) {
+  substr(string, 1, nchar(prefix))==prefix
+}
+f1(z, 2)
+z
+
+k<- NA
+f2<- function(x) {
+  if (length(x)<= 1) return(NULL)
+    x[-length(x)]
+}
+f2(z)
+
+h<- 5
+f3<- function(x, length) {
+  rep(x, length.out = length(y))
+}
+f3(h, z)
+```
+
+  
+
+
+
 
