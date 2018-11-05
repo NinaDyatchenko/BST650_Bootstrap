@@ -150,22 +150,22 @@ sqrt(var(data$Weight)/length(data$Weight))
 ###5. Write both_na(), a function that takes two vectors of the same length and returns the number of positions that have an NA in both vectors.
 
 ```{r}
-a<- c(NA, 1:10, NA)
+#a<- c(NA, 1:10, NA)
 b<- c(NA, 3:13, NA)
-(is.na(a))
+#(is.na(a))
 
 both_na<- function(a, b){
   frequesncy(is.na(a)-is.na(b))
 }
-both_na(a, b)  
+#both_na(a, b)  
 
 ```
 ###6. What do the following functions do? Why are they useful even though they are so short?
 ```{r}
-is_directory<- function (x) file.info(x)$isdir
-is_readable <- function(x) file.access(x, 4) ==0
-is_directory(x)
-is_readable(x)
+#is_directory<- function (x) file.info(x)$isdir
+#is_readable <- function(x) file.access(x, 4) ==0
+#is_directory(x)
+#is_readable(x)
 #Error in file.info(x) : invalid filename argument
 #Error in file.access(x, 4) : invalid 'names' argument
 ```
@@ -187,7 +187,9 @@ Avoid overwriting existing functions. Bad:
   c<- 10
 Use comments, start writing comment with #.
 
-### Exercises
+### Exercises 1
+
+####1.Read the source code for each of the following three functions, puzzle out what they do, and then brainstorm better names.
 ```{r}
 f1<- function (string, prefix) {
   substr(string, 1, nchar(prefix))==prefix
@@ -209,7 +211,7 @@ f3<- function(x, y) {
 f3(z, h)
 #repeats y x-times
 ```
-###2. Take a function that you’ve written recently and spend 5 minutes brainstorming a better name for it and its arguments.
+####2. Take a function that you’ve written recently and spend 5 minutes brainstorming a better name for it and its arguments.
 ```{r}
 find_prefix<- function (string, prefix) {
   substr(string, 1, nchar(prefix))==prefix
@@ -230,6 +232,108 @@ f3<- function(x, length) {
 }
 f3(h, z)
 ```
+
+####3. Compare and contrast rnorm() and MASS::mvrnorm(). How could you make them more consistent?
+mvnorm() is a multivariate normal distribution (matrix), uses more than one vector.
+rnorm() reates a sample from a normal distib. around mean and with st.dev.
+
+####4.Make a case for why norm_r(), norm_d() etc would be better than rnorm(), dnorm(). Make a case for the opposite.
+The common prefix (norm) at the begining of the name is better because autocomplete help that would give all "norm" functions.
+
+#4. Conditional execution
+If statement allowes to conditionally execute code:
+
+if (condition){
+  # code executed when condition is TRUE
+} else {
+  # code executed when condition is FALSE
+}
+
+Is each element of a vectore is named? Has_name will give true for value that has name:
+```{r}
+has_name<- function(x){
+  nms<- names(x)  #names() gets or sets the names of an object
+  if (is.null(nms)){
+    rep(FALSE, length(x))  # vector of "FALSE" - no names 
+  } else {
+    !is.na(nms) & nms !=""
+  }
+}
+x<- c("Yes", "No")
+has_name(x)
+z <- 1:3
+names(z)
+## assign just one name
+names(z)[2] <- "b"
+z
+has_name(z)
+```
+### Conditions
+The condition must evaluate to either TRUE or FALSE.
+|| (or) will return the first TRUE.
+&& (and) will return the first FALSE.
+Don't use | or & in an if statement.
+any() all() to colapce logical vector.
+== is vectorised. Can have more then one output.
+identical() returns a single TRUE or FALSE. Watch out for integers/doubles, and floating point numbers:
+```{r}
+identical(0L, 0)
+
+x<- sqrt(2) ^2
+x
+x==2
+x-2
+```
+### Multiple conditions
+Chain multiple statements together:
+r
+if(this) {
+  # do that
+} else if {
+  # do something else
+} else {
+  # do another
+}
+
+swith() allowes to evaluate selected code based on position, evaluates EXPR and accordingly chooses one of the further arguments (in ...). EXPR	an expression evaluating to a number or a character string.
+```{r}
+mult<- function(x, y, op){
+  switch(op, 
+         plus = x + y,
+         minus = x - y,
+         times = x * y,
+         divide = x / y,
+         stop("Unknown op!")
+         )
+}
+x=4
+y=8
+mult(x, y, "plus")
+```
+cut() describes continuous variables.
+
+### Code style
+Both if and function should (almost) always be followed by squiggly brackets ({}), and the contents should be indented by two spaces. 
+An opening curly brace should never go on its own line and should always be followed by a new line. A closing curly brace should always go on its own line, unless it’s followed by else. Always indent the code inside curly braces.
+```{r}
+if (y<0 && debug) {
+  message("Y is negative")
+}
+
+if (y==0) {
+  log(x)
+} else {
+  y^x
+}
+```
+It’s ok to drop the curly braces if you have a very short if statement that can fit on one line:
+```{r}
+y<- 10
+x<- if (y<20) "Too low" else "Too high"
+x
+```
+### Exercises 2
+####1. What’s the difference between if and ifelse()? Carefully read the help and construct three examples that illustrate the key differences.
 
   
 
